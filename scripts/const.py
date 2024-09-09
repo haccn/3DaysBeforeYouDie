@@ -1,0 +1,11 @@
+WIN_SIZE = (480*2,270*2)
+
+DISPLAY_SIZE = (480,270)
+
+PATH = "assets/"
+
+TILE_SIZE = (16,16)
+
+DRAG = .1
+
+GRAV = .175
