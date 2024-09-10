@@ -142,7 +142,7 @@ class tile_System():
                 tile["img"] = "left.png"
             
             if self.match_tile(tile,bottom_tile) and self.match_tile(tile,top_tile) and self.match_tile(tile,right_tile) and self.match_tile(tile,left_tile):
-                tile["img"] = "Middle.png"
+                tile["img"] = "middle.png"
 
 
     # def group_tiles(self):
