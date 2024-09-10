@@ -26,7 +26,7 @@ def load_program(ctx,program_name):
 def surf_to_texture(ctx,surf):
     tex = ctx.texture(surf.get_size(),4)
     tex.filter = (moderngl.NEAREST,moderngl.NEAREST)
-    tex.swizzle = 'BRGA'
+    tex.swizzle = 'BGRA'
     tex.write(surf.get_view('1'))
     return tex
 

@@ -1,5 +1,7 @@
 import pygame
 
+import math
+
 from scripts.components.health import Health
 from scripts.utils import *
 
@@ -27,8 +29,11 @@ class Entity():
 
         self.pos[0] += frame_movement[0]
         self.rect.update(self.pos[0],self.pos[1],self.size[0],self.size[1])
-        collision = self.collision()
-        if collision:
+        collision = self.rect.collidelist(self.collidables)
+
+        
+        if collision != -1:
+            print(self.collidables[collision])
             if frame_movement[0] > 0:
                 self.rect.right = self.collidables[collision].left
             if frame_movement[0] < 0:
@@ -37,9 +42,9 @@ class Entity():
 
         self.pos[1] += frame_movement[1]
         self.rect.update(self.pos[0],self.pos[1],self.size[0],self.size[1])
-        collision = self.collision()
+        collision = self.rect.collidelist(self.collidables)
 
-        if collision:
+        if collision != -1:
             if frame_movement[1] > 0:
                 self.rect.bottom = self.collidables[collision].top
             if frame_movement[1] < 0:
@@ -48,34 +53,26 @@ class Entity():
 
 
     def get_collisions(self):
-        self.collidables = []
+        closest_tiles = []
 
         for tile in self.app.tile_system.tiles:
-            if pygame.Vector2(tile["pos"][0],tile["pos"][1]).distance_to(self.pos) < 32:
-                rect = pygame.Rect(tile["pos"][0],tile["pos"][1],tile["size"][0],tile["size"][1])
-                self.collidables.append(rect)
+            tile_dist = math.sqrt((self.pos[0]-tile["pos"][0])**2 + (self.pos[1]-tile["pos"][1])**2)
+            #print(tile_dist)
+            #print(self.pos,tile["pos"])
+            if tile_dist < 96:
+                #print(tile_dist)
+                closest_tiles.append(tile)
 
-    def collision(self):
-        collision = self.rect.collidelist(self.collidables)
+        #print(self.collidables)
 
-        if collision == -1:
-            return False
+        closest_rects = [tile["rect"] for tile in closest_tiles]
 
-        return collision
+        return closest_rects
 
     def update(self):
-        self.get_collisions()
+        self.collidables = self.get_collisions()
 
         self.move()
 
-    def render(self):
-        
-        rect = self.rect
-
-        self.display_pos[0] += (self.pos[0] - self.display_pos[0]) / 10
-        self.display_pos[1] += (self.pos[1] - self.display_pos[1]) / 10
-        
-        rect.x = self.display_pos[0]
-        rect.y = self.display_pos[1]
-
-        pygame.draw.rect(self.app.display,(0,0,0),self.rect)
+    def render(self,offset=(0,0)):
+        self.app.display.blit(pygame.transform.scale(load_img("player/player.png"),self.size),(self.pos[0]-offset[0],self.pos[1]-offset[1]))

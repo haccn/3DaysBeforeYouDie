@@ -43,6 +43,8 @@ class game():
 
         self.render_object = render_object(self.ctx,self.program,self.quad_buffer)
 
+        self.offset = [0,0]
+
         # mouse
 
         self.mouse = Mouse(self,(0,0),(16,16))
@@ -83,15 +85,19 @@ class game():
             
     def render(self):
 
+        self.offset[0] += (self.player.rect.centerx - self.display.get_width() / 2 - self.offset[0]) / 15
+        self.offset[1] += (self.player.rect.centery - self.display.get_height() / 2 - self.offset[1]) / 15
+
         self.mouse.render()
 
-        self.player.render()
+        self.player.render(self.offset)
 
-        self.tile_system.render()
+        self.tile_system.render(self.offset)
 
         frame_tex = surf_to_texture(self.ctx,self.display)
         frame_tex.use(0)
         self.program['tex'] = 0
+
 
         self.render_object.render(mode=moderngl.TRIANGLE_STRIP)
 
