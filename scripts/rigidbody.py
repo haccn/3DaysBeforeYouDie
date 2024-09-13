@@ -23,11 +23,20 @@ class Rigidbody:
         # collect relevant collidables
 
         collidables = []
+        collidable_max_distance = 40
 
-        # filter out distant tiles (anything over 40 units away)
+        # filter out distant tiles
         for tile in self.app.tile_system.tiles:
-            if np.linalg.norm(tile["rect"].center - self.pos) < 40:
+            if np.linalg.norm(tile["rect"].center - self.pos) < collidable_max_distance:
                 collidables.append(tile["rect"])
+
+        for enemy in self.app.enemies:
+            if np.linalg.norm(enemy.pos - self.pos) < collidable_max_distance and\
+                enemy != self:
+                collidables.append(enemy.rect)
+
+        if self.app.player != self:
+            collidables.append(self.app.player.rect)
 
         # TODO add other entities to collidables
 
