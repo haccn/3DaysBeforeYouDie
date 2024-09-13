@@ -1,3 +1,5 @@
+import math
+
 import sys
 
 import pygame
@@ -28,8 +30,8 @@ class game():
 
         self.clock = pygame.time.Clock()
 
+        self.time_elapsed = 0
         self.deltatime = 0
-        self.delta = 0
 
         # moderngl stuff
 
@@ -81,6 +83,7 @@ class game():
 
     def update(self):
         while True:
+            self.keys_pressed = pygame.key.get_pressed()
             self.all_events = self.events()
 
             self.render()
@@ -91,12 +94,8 @@ class game():
 
             self.building_system.update()
 
-            #print(self.mouse.pos)
-
-            self.deltatime += self.clock.tick(60) / 1000
-            self.delta = self.clock.get_fps() / 1000
-
-            #print(self.deltatime)
+            self.deltatime = self.clock.tick() / 1000.
+            self.time_elapsed += self.deltatime
 
 
     def render(self):
@@ -104,7 +103,6 @@ class game():
 
         self.screen_size = pygame.display.get_window_size()
         self.display = pygame.transform.scale(self.display,(self.screen_size[0] / 2,self.screen_size[1] / 2))
-
 
         self.offset[0] += (self.player.rect.centerx - self.display.get_width() / 2 - self.offset[0]) / 15
         self.offset[1] += (self.player.rect.centery - self.display.get_height() / 2 - self.offset[1]) / 15

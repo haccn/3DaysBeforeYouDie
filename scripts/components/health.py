@@ -11,10 +11,10 @@ class Health():
         self.lastDamage = 0
 
     def iframes(self,dur):
-        if self.app.deltatime - self.lastDamage > dur:
-            self.lastDamage = self.app.deltatime
+        if self.app.time_elapsed - self.lastDamage > dur:
+            self.lastDamage = self.app.time_elapsed
             return False
-        
+
         return True
 
     def increaseHealth(self,increment):
@@ -37,4 +37,4 @@ class Health():
 
 
 
-        
+
