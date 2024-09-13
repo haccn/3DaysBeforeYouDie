@@ -59,7 +59,7 @@ class game():
 
         #player
 
-        self.player = Player(self,(0,0),(9,16),5)
+        self.player = Player(app=self,size=(9,16),health=5)
 
         #self.time_cycle = time_cycle(self)
 

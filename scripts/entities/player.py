@@ -4,8 +4,8 @@ from scripts.entities.entity import Entity
 from scripts.utils import *
 
 class Player(Entity):
-    def __init__(self,app,pos,size,health):
-        super().__init__(app, pos, size,health)
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
 
         self.resources = {"money" : 0}
         self.modes = ["Fighting","Building"]
@@ -38,7 +38,7 @@ class Player(Entity):
                     self.app.building_system.place_building()
 
                 #print(self.mode)
-                    
+
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_w:
                     self.movement[2] = False
@@ -49,11 +49,11 @@ class Player(Entity):
                 if event.key == pygame.K_d:
                     self.movement[1] = False
 
-    
+
     def update(self):
         self.input()
         return super().update()
-    
+
     def render(self,offset=(0,0)):
         if self.mode == "Building":
             self.app.building_system.preview()

@@ -3,19 +3,15 @@ import pygame
 import math
 
 from scripts.components.health import Health
+from scripts.rigidbody import Rigidbody
 from scripts.utils import *
 
-class Entity():
-    def __init__(self,app,pos,size,health):
+class Entity(Rigidbody):
+    def __init__(self,app,size,health,*args,**kwargs):
+        super().__init__(*args,**kwargs)
         self.app = app
 
-        self.pos = list(pos)
-        self.display_pos = self.pos
         self.size = size
-
-        self.rect = pygame.Rect(self.pos[0],self.size[1],self.size[0],self.size[1])
-
-        self.lerp_time = 0
 
         self.health = Health(self.app,health)
 
@@ -31,7 +27,7 @@ class Entity():
         self.rect.update(self.pos[0],self.pos[1],self.size[0],self.size[1])
         collision = self.rect.collidelist(self.collidables)
 
-        
+
         if collision != -1:
             if frame_movement[0] > 0:
                 self.rect.right = self.collidables[collision].left
