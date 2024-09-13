@@ -8,28 +8,28 @@ from scripts.utils import *
 
 from scripts.const import *
 
-class tile_System():
+class tile_system():
     def __init__(self,app,tiles=[]):
-        
+
         self.app = app
 
         self.tiles = tiles
 
-        self.tile_types = ["Grass","Rock","Water"]
+        self.tile_types = ["grass","rock","water"]
 
         self.tile_type = 0
 
         self.tile_index = 0
 
         self.snap = False
-        
+
         self.cd = self.app.deltatime
 
 
 
     def pick_tile(self,):
         keys = pygame.key.get_pressed()
-        
+
         for event in self.app.all_events:
             if event.type == pygame.MOUSEWHEEL:
                 if self.debounce(.2):
@@ -53,7 +53,7 @@ class tile_System():
         for tile in self.tiles:
             if tile["pos"] == pos:
                 return
-            
+
         path = f'tiles/{tile_type}'
         self.tiles.append({"pos" : pos,"size" : size,"tile_type" : tile_type,
                            "rect" : pygame.Rect(pos[0],pos[1],size[0],size[1]),"img" : os.listdir(f"assets/{path}")[self.tile_index]})
@@ -96,8 +96,8 @@ class tile_System():
         if tile_0 is None or tile_1 is None:
             return False
         else:
-            return tile_0["tile_type"] == tile_1["tile_type"]   
-        
+            return tile_0["tile_type"] == tile_1["tile_type"]
+
     def auto_tile(self):
         for tile in self.tiles:
 
@@ -109,7 +109,7 @@ class tile_System():
             bottom_tile = self.get_tile((tile["pos"][0],tile["pos"][1] + TILE_SIZE[1]))
 
             left_tile = self.get_tile((tile["pos"][0] - TILE_SIZE[0],tile["pos"][1]))
-            
+
             print(tile["pos"])
 
             tile["img"] = "single.png"
@@ -140,7 +140,7 @@ class tile_System():
                 tile["img"] = "right.png"
             if self.match_tile(tile,bottom_tile) and self.match_tile(tile,top_tile) and self.match_tile(tile,right_tile):
                 tile["img"] = "left.png"
-            
+
             if self.match_tile(tile,bottom_tile) and self.match_tile(tile,top_tile) and self.match_tile(tile,right_tile) and self.match_tile(tile,left_tile):
                 tile["img"] = "middle.png"
 
@@ -158,7 +158,7 @@ class tile_System():
     #                 tiles.append(tile_up)
 
     #     return rects
-        
+
 
 
     def update(self):
