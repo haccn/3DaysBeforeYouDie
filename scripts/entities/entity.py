@@ -33,7 +33,6 @@ class Entity():
 
         
         if collision != -1:
-            print(self.collidables[collision])
             if frame_movement[0] > 0:
                 self.rect.right = self.collidables[collision].left
             if frame_movement[0] < 0:
@@ -57,13 +56,9 @@ class Entity():
 
         for tile in self.app.tile_system.tiles:
             tile_dist = math.sqrt((self.pos[0]-tile["pos"][0])**2 + (self.pos[1]-tile["pos"][1])**2)
-            #print(tile_dist)
-            #print(self.pos,tile["pos"])
             if tile_dist < 96:
-                #print(tile_dist)
                 closest_tiles.append(tile)
 
-        #print(self.collidables)
 
         closest_rects = [tile["rect"] for tile in closest_tiles]
 
