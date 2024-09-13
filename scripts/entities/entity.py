@@ -4,7 +4,6 @@ import math
 
 import numpy as np
 
-from scripts.components.health import Health
 from scripts.rigidbody import Rigidbody
 from scripts.utils import *
 
@@ -13,18 +12,23 @@ class DamageSource:
         self.point = point
 
 class Entity(Rigidbody):
-    def __init__(self,app,health,*args,**kwargs):
+    def __init__(self,app,health,*args,forward = np.array([0., -1.]),**kwargs):
         super().__init__(app,*args,**kwargs)
-        self.app = app
-        self.health = Health(self.app,health)
+
+        self.health = 3
+
+        self.forward = forward
+
         self.recoil_speed = 200.
 
     def update(self):
-        super().update(self.app.deltatime)
+        super().update()
+        if (self.velocity != 0.).any():
+            self.forward = normalize(self.velocity)
 
     def damage(self, damage, source: DamageSource):
-        self.health.takeDamage(damage)
-        self.velocity = normalize(self.position - source.point) * self.recoil_speed
+        self.health -= damage
+        self.velocity = normalize(self.pos - source.point) * self.recoil_speed
         # TODO do something when health is 0
         # this will need to be handled differently by the player and the enemies
         #if self.health == 0:

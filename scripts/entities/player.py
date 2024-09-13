@@ -2,14 +2,20 @@ import pygame
 
 import numpy as np
 
-from scripts.entities.entity import Entity
+from scripts.entities.entity import Entity, DamageSource
+from scripts.entities.enemy import Enemy
 from scripts.utils import *
 
 class Player(Entity):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
 
+        self.sprite = load_img("player/player.png")
+
         self.speed = 100.
+        self.attack_distance = 20.
+        self.attack_damage = 1
+
         self.resources = {"money" : 0}
         self.modes = ["Fighting","Building"]
         self.mode = "Fighting"
@@ -27,8 +33,14 @@ class Player(Entity):
                         self.app.building_system.placement = max(0,self.app.building_system.placement - 1)
                     if event.key == pygame.K_e:
                         self.app.building_system.placement = min(len(self.app.building_system.building_types) - 1,self.app.building_system.placement + 1)
-            if self.mode == "Building":
-                if self.app.mouse.click():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.mode == "Fighting":
+                    if event.button == 1:
+                        hits = raycast(Ray(self.pos, self.pos + self.forward * self.attack_distance), self.app.enemies)
+                        for hit in hits:
+                            if isinstance(hit.entity, Enemy):
+                                hit.entity.damage(self.attack_damage, DamageSource(self.pos))
+                elif self.mode == "Building":
                     print("Yes")
                     self.app.building_system.place_building()
 
@@ -46,8 +58,17 @@ class Player(Entity):
         self.velocity = input_vec * self.speed
         super().update()
 
-    def render(self,offset=(0,0)):
+    def render(self, offset=np.array([0, 0])):
         if self.mode == "Building":
             self.app.building_system.preview()
-        self.app.display.blit(pygame.transform.scale(load_img("player/player.png"),self.size),(self.pos[0]-offset[0],self.pos[1]-offset[1]))
+        sprite = pygame.transform.scale(self.sprite, self.size)
+        self.app.display.blit(sprite, self.pos - offset)
+
+        # FOR DEBUGGING RAYCASTING
+        hits = raycast(Ray(self.pos, self.pos + self.forward * self.attack_distance), self.app.enemies)
+        color = (0, 255, 0) if len(hits) > 0 else (128, 128, 128)
+        pygame.draw.line(self.app.display, color, self.pos - offset, self.pos + self.forward * self.attack_distance - offset)
+        for hit in hits:
+            pygame.draw.circle(self.app.display, (0, 255, 0), hit.point - offset, 5)
+
         super().render(offset)

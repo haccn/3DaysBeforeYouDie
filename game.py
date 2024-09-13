@@ -107,7 +107,7 @@ class game():
 
 
     def render(self):
-        self.display.fill((255,255,255))
+        self.display.fill((64,200,64))
 
         self.screen_size = pygame.display.get_window_size()
         self.display = pygame.transform.scale(self.display,(self.screen_size[0] / 2,self.screen_size[1] / 2))
