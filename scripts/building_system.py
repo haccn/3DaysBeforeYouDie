@@ -10,13 +10,13 @@ class Building_System():
         self.buildings = []
         self.place_pos = [0,0]
         self.building_types = {"Wall" : {"pos" : self.place_pos,"size" : (16,16),"img" : load_img("tiles/buildings/stoneWall/bottom.png"),"rect" : pygame.Rect(self.place_pos,(16,16))},
-                               "Tower" : {"pos" : self.place_pos,"size" : (12,28),"img" : load_img("tiles/buildings/Tower/WoodenTower.png"),"rect" : pygame.Rect(self.place_pos,(32,32))}
+                               "Tower" : {"pos" : self.place_pos,"size" : (12,28),"img" : load_img("tiles/buildings/tower/woodenTower.png"),"rect" : pygame.Rect(self.place_pos,(32,32))}
                                }
-        
-        self.placement = 0 
-        
+
+        self.placement = 0
+
     #def place_wall(self):
-    
+
 
     def place_building(self):
         building = list(self.building_types.keys())[self.placement]
@@ -49,12 +49,12 @@ class Building_System():
                     self.placement = min(len(self.building_types),self.placement + 1)
                 if event.key == pygame.K_q:
                     self.placement = max(0,self.placement - 1)
-                
+
     def render(self,offset=(0,0)):
         #print(self.buildings)
         for building in self.buildings:
             #print(building)
             self.app.display.blit(building["img"],(building["pos"][0]-offset[0],building["pos"][1]-offset[1]))
-    
+
     def preview(self):
         pygame.draw.rect(self.app.display,(0,255,0,125),pygame.Rect((self.place_pos[0]-self.app.offset[0],self.place_pos[1]-self.app.offset[1]),(16,16)))

@@ -1,6 +1,6 @@
 import sys
 
-import pygame 
+import pygame
 
 import moderngl
 
@@ -10,7 +10,7 @@ from scripts.const import *
 from scripts.mgl_utils import *
 from scripts.utils import *
 from scripts.mouse import Mouse
-from level_creator_scripts.tile_system import tile_System
+from level_creator_scripts.tile_system import tile_system
 from scripts.entities.player import Player
 from scripts.time_cycle import time_cycle
 from scripts.building_system import Building_System
@@ -20,12 +20,12 @@ class game():
         pygame.init()
         self.screen_size = pygame.display.get_desktop_sizes()[0]
         self.screen = pygame.display.set_mode((WIN_SIZE),pygame.OPENGL | pygame.DOUBLEBUF | pygame.RESIZABLE)
-        self.display = pygame.Surface(DISPLAY_SIZE) 
+        self.display = pygame.Surface(DISPLAY_SIZE)
 
-        # clock 
+        # clock
 
         self.all_events = self.events()
-        
+
         self.clock = pygame.time.Clock()
 
         self.deltatime = 0
@@ -53,7 +53,7 @@ class game():
 
         #tile_system
 
-        self.tile_system = tile_System(self)
+        self.tile_system = tile_system(self)
 
         self.tile_system.loadsave("tileset_0")
 
@@ -67,14 +67,14 @@ class game():
 
 
 
-        
+
     def events(self):
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            
+
         #print(pygame.display.get_window_size())
 
         return events
@@ -88,23 +88,23 @@ class game():
             self.player.update()
 
             self.mouse.update()
-            
+
             self.building_system.update()
 
             #print(self.mouse.pos)
-            
+
             self.deltatime += self.clock.tick(60) / 1000
             self.delta = self.clock.get_fps() / 1000
 
             #print(self.deltatime)
 
-            
+
     def render(self):
         self.display.fill((255,255,255))
-        
+
         self.screen_size = pygame.display.get_window_size()
         self.display = pygame.transform.scale(self.display,(self.screen_size[0] / 2,self.screen_size[1] / 2))
-        
+
 
         self.offset[0] += (self.player.rect.centerx - self.display.get_width() / 2 - self.offset[0]) / 15
         self.offset[1] += (self.player.rect.centery - self.display.get_height() / 2 - self.offset[1]) / 15
@@ -134,7 +134,7 @@ class game():
 
         pygame.display.flip()
 
-        
+
 
 if __name__ == "__main__":
     game().update()
