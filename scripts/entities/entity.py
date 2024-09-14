@@ -44,7 +44,7 @@ class Entity():
         collision = self.rect.collidelist(self.collidables)
 
         if collision != -1:
-            if frame_movement[1] > 0:
+            if frame_movement[1] > 0:   
                 self.rect.bottom = self.collidables[collision].top
             if frame_movement[1] < 0:
                 self.rect.top = self.collidables[collision].bottom

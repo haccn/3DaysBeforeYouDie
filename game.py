@@ -91,7 +91,7 @@ class game():
 
             self.building_system.update()
 
-            #print(self.mouse.pos)
+            #print(self.mouse.pos)dd
 
             self.deltatime += self.clock.tick(60) / 1000
             self.delta = self.clock.get_fps() / 1000

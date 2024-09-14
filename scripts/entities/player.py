@@ -34,8 +34,9 @@ class Player(Entity):
                         self.app.building_system.placement = min(len(self.app.building_system.building_types) - 1,self.app.building_system.placement + 1)
             if self.mode == "Building":
                 if self.app.mouse.click():
-                    print("Yes")
                     self.app.building_system.place()
+                if self.app.mouse.right_click():
+                    self.app.building_system.delete_building()
 
                 #print(self.mode)
                     

@@ -69,8 +69,7 @@ class Building_System():
                 self.match_wall(wall,(wall["pos"][0],wall["pos"][1]+TILE_SIZE[1])),
                 self.match_wall(wall,(wall["pos"][0]+TILE_SIZE[0],wall["pos"][1])),
                 self.match_wall(wall,(wall["pos"][0]-TILE_SIZE[0],wall["pos"][1]))]
-        
-        print(walls)
+
     
         if walls[0] and walls[1]:
             img = load_img(f"tiles/buildings/{wall["b_type"]}/side.png")
@@ -121,8 +120,6 @@ class Building_System():
         self.place_pos[0] = round(self.place_pos[0]) * TILE_SIZE[0] + (int(self.app.player.rect.centerx / TILE_SIZE[0]) * TILE_SIZE[0])
         self.place_pos[1] = round(self.place_pos[1]) * TILE_SIZE[1] + (int(self.app.player.rect.centery / TILE_SIZE[1]) * TILE_SIZE[1])
 
-        #print(self.place_pos)
-
     def select(self):
         for event in self.app.all_events:
             if event.type == pygame.KEYDOWN:
@@ -131,10 +128,13 @@ class Building_System():
                 if event.key == pygame.K_q:
                     self.placement = max(0,self.placement - 1)
 
+    def delete_building(self):
+        for build in self.buildings:
+            if build["rect"].collidepoint(self.place_pos):
+                self.buildings.remove(build)
+
     def render(self,offset=(0,0)):
-        #print(self.buildings)
         for building in self.buildings:
-            #print(building)
             self.app.display.blit(building["img"],(building["pos"][0]-offset[0],building["pos"][1]-offset[1]))
 
     def preview(self):
