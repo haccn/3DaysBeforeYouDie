@@ -19,7 +19,7 @@ class Projectile():
 
         self.direction = direction
 
-        self.startTime = self.app.deltatime
+        self.startTime = self.app.time_elapsed
 
         self.rect = pygame.Rect(self.pos[0],self.pos[1],self.size[0],self.size[1])
 
@@ -55,7 +55,7 @@ class Projectile():
                 continue
             if self.rect.colliderect(entity.rect):
                 return entity
-            
+
     def get_collision(self):
 
         collision = self.rect.collidelist(self.collision_rects)
@@ -64,7 +64,7 @@ class Projectile():
             return
 
         return self.collision_rects[collision]
-            
+
     def closest_tiles(self,tiles):
 
         closest_tiles = []
@@ -77,4 +77,4 @@ class Projectile():
         closest_rects = [tile["rect"] for tile in closest_tiles]
 
         return closest_rects
-        
+

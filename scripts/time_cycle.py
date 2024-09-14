@@ -20,9 +20,9 @@ class time_cycle():
 
     def update(self):
 
-        if self.times[self.state]["dur"] < self.app.deltatime - self.time:
+        if self.times[self.state]["dur"] < self.app.time_elapsed - self.time:
             self.state += 1
-            self.time = self.app.deltatime
+            self.time = self.app.time_elapsed
 
         if self.state > len(self.times):
             self.state = 0
@@ -32,7 +32,7 @@ class time_cycle():
         frame_tex.use(0)
         self.program['tex'] = 0
 
-        t = (self.app.deltatime - self.time) / self.times[self.state]["dur"]
+        t = (self.app.time_elapsed - self.time) / self.times[self.state]["dur"]
 
         if t >= 1:
             t = 1
@@ -40,6 +40,6 @@ class time_cycle():
         self.program["time"] = t
 
         self.render_object.render(mode=moderngl.TRIANGLE_STRIP)
-        
-        
+
+
 

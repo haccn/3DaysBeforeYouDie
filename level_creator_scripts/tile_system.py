@@ -23,7 +23,7 @@ class tile_system():
 
         self.snap = False
 
-        self.cd = self.app.deltatime
+        self.cd = self.app.time_elapsed
 
 
 
@@ -110,8 +110,6 @@ class tile_system():
 
             left_tile = self.get_tile((tile["pos"][0] - TILE_SIZE[0],tile["pos"][1]))
 
-            print(tile["pos"])
-
             tile["img"] = "single.png"
 
             if self.match_tile(tile,bottom_tile):
@@ -179,9 +177,9 @@ class tile_system():
     def debounce(self,dur):
         waited = False
 
-        if self.app.deltatime - self.cd > dur:
+        if self.app.time_elapsed - self.cd > dur:
             waited = True
-            self.cd = self.app.deltatime
+            self.cd = self.app.time_elapsed
 
         return waited
 
