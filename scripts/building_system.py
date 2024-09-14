@@ -65,12 +65,12 @@ class Building_System():
         img = load_img(f"tiles/buildings/{wall["b_type"]}/center.png")
 
         corner = load_img(f"tiles/buildings/{wall["b_type"]}/corner.png")
-
-        wall = {"b_type" : wall["b_type"],"pos" : wall["pos"],"size" : wall["size"],"img" : img,"rect" : pygame.Rect(wall["pos"],wall["size"])}
         walls = [self.match_wall(wall,(wall["pos"][0],wall["pos"][1]-TILE_SIZE[1])),
                 self.match_wall(wall,(wall["pos"][0],wall["pos"][1]+TILE_SIZE[1])),
                 self.match_wall(wall,(wall["pos"][0]+TILE_SIZE[0],wall["pos"][1])),
                 self.match_wall(wall,(wall["pos"][0]-TILE_SIZE[0],wall["pos"][1]))]
+        
+        print(walls)
     
         if walls[0] and walls[1]:
             img = load_img(f"tiles/buildings/{wall["b_type"]}/side.png")
@@ -95,19 +95,14 @@ class Building_System():
     def place(self):
         placement = self.building_types[list(self.building_types.keys())[self.placement]]
 
+        for build in self.buildings:
+            if build["rect"].collidepoint(self.place_pos):
+                return
+
         if placement["b_type"] == "wall":
-            wall = self.place_wall(list(self.building_types.keys())[self.placement],(16,16),placement["health"])
-            walls = [self.get_wall((wall["pos"][0],wall["pos"][1]-TILE_SIZE[1])),
-                self.get_wall((wall["pos"][0],wall["pos"][1]+TILE_SIZE[1])),
-                self.get_wall((wall["pos"][0]+TILE_SIZE[0],wall["pos"][1])),
-                self.get_wall((wall["pos"][0]-TILE_SIZE[0],wall["pos"][1]))]
-            for building in self.buildings:
-                for wall in walls:
-                    if not wall:
-                        continue
-                    if wall == building:
-                        print("yes")
-                        self.update_wall(building)
+            self.place_wall(list(self.building_types.keys())[self.placement],(16,16),placement["health"])
+            for wall in self.buildings:
+                self.update_wall(wall)
 
         if placement["b_type"] == "tower":
             self.place_building("tower",list(self.building_types.keys())[self.placement],5)
