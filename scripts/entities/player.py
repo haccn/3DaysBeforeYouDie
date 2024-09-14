@@ -8,13 +8,11 @@ from scripts.utils import *
 
 class Player(Entity):
     def __init__(self,*args,**kwargs):
-        super().__init__(*args,**kwargs)
+        super().__init__(*args,health=5,size=np.array([9, 16]),**kwargs)
 
         self.sprite = load_img("player/player.png")
 
         self.speed = 100.
-        self.attack_distance = 20.
-        self.attack_damage = 1
 
         self.resources = {"money" : 0}
         self.modes = ["Fighting","Building"]
@@ -49,6 +47,7 @@ class Player(Entity):
 
     def update(self):
         self.input()
+
         input_vec = normalize(np.array([
             float(self.app.keys_pressed[pygame.K_d] | self.app.keys_pressed[pygame.K_RIGHT]) -
                 float(self.app.keys_pressed[pygame.K_a] | self.app.keys_pressed[pygame.K_LEFT]),
@@ -56,19 +55,14 @@ class Player(Entity):
                 float(self.app.keys_pressed[pygame.K_w] | self.app.keys_pressed[pygame.K_UP]),
         ]))
         self.velocity = input_vec * self.speed
+
+        self.forward = normalize(self.app.mouse.pos - self.pos)
+
         super().update()
 
     def render(self, offset=np.array([0, 0])):
+        sprite = super().render(offset)
+        sprite = pygame.transform.scale(sprite, self.size)
+        self.app.display.blit(sprite, self.pos - self.size * 0.5 - offset)
         if self.mode == "Building":
             self.app.building_system.preview()
-        sprite = pygame.transform.scale(self.sprite, self.size)
-        self.app.display.blit(sprite, self.pos - offset)
-
-        # FOR DEBUGGING RAYCASTING
-        hits = raycast(Ray(self.pos, self.pos + self.forward * self.attack_distance), self.app.enemies)
-        color = (0, 255, 0) if len(hits) > 0 else (128, 128, 128)
-        pygame.draw.line(self.app.display, color, self.pos - offset, self.pos + self.forward * self.attack_distance - offset)
-        for hit in hits:
-            pygame.draw.circle(self.app.display, (0, 255, 0), hit.point - offset, 5)
-
-        super().render(offset)

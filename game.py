@@ -62,7 +62,7 @@ class game():
 
         #player
 
-        self.player = Player(app=self,size=(9,16),health=5)
+        self.player = Player(app=self)
 
         # enemies
 

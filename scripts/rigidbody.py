@@ -5,7 +5,7 @@ class Rigidbody:
     def __init__(self,
         app,
         pos = np.array([0., 0.]),
-        size = np.array([20., 20.]),
+        size = np.array([10., 10.]),
         velocity = np.array([0., 0.]),
         static_friction = 0.5,
         kinetic_friction = 3,
@@ -53,7 +53,8 @@ class Rigidbody:
         if collision != -1:
             self.pos[1] = prevy
 
-        self.rect.update(self.pos, self.size)
+        self.rect.center = self.pos
+        self.rect.size = self.size
 
         # apply friction
 
