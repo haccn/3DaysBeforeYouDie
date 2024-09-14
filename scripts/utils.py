@@ -12,6 +12,12 @@ def normalize(vec):
 def load_img(path):
     return pygame.image.load(f"{PATH}{path}")
 
+def del_from_list(l: list, obj: object):
+    for i, o in enumerate(l):
+        if o == obj:
+            del l[i]
+            break
+
 class Ray:
     def __init__(self, p1, p2, is_infinite: bool = False):
         self.p1 = p1
