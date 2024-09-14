@@ -4,19 +4,19 @@ import numpy as np
 class Rigidbody:
     def __init__(self,
         app,
-        pos = np.array([0., 0.]),
-        size = np.array([10., 10.]),
-        velocity = np.array([0., 0.]),
+        pos = [0., 0.],
+        size = [10., 10.],
+        velocity = [0., 0.],
         static_friction = 0.5,
-        kinetic_friction = 3,
+        kinetic_friction = 3.,
      ):
         self.app = app
 
-        self.pos = pos
-        self.size = size
+        self.pos = np.array(pos)
+        self.size = np.array(size)
         self.rect = pygame.Rect(pos, size)
 
-        self.velocity = velocity
+        self.velocity = np.array(velocity)
         self.static_friction = static_friction
         self.kinetic_friction = kinetic_friction
 
@@ -24,7 +24,7 @@ class Rigidbody:
         # collect relevant collidables
 
         collidables = []
-        collidable_max_distance = 40
+        collidable_max_distance = 40.
 
         # filter out distant tiles
         for tile in self.app.tile_system.tiles:
@@ -32,8 +32,7 @@ class Rigidbody:
                 collidables.append(tile["rect"])
 
         for enemy in self.app.enemies:
-            if np.linalg.norm(enemy.pos - self.pos) < collidable_max_distance and\
-                enemy != self:
+            if np.linalg.norm(enemy.pos - self.pos) < collidable_max_distance and enemy != self:
                 collidables.append(enemy.rect)
 
         if self.app.player != self:
@@ -58,7 +57,19 @@ class Rigidbody:
 
         # apply friction
 
-        if (np.abs(self.velocity) < self.static_friction).all():
-            self.velocity = np.zeros(2)
+        print(self, " ", self.velocity)
+
+        if abs(self.velocity[0]) < self.static_friction:
+            self.velocity[0] = 0
         else:
-            self.velocity -= self.velocity * self.kinetic_friction * self.app.deltatime
+            self.velocity[0] -= self.velocity[0] * self.kinetic_friction * self.app.deltatime
+
+        if abs(self.velocity[1]) < self.static_friction:
+            self.velocity[1] = 0
+        else:
+            self.velocity[1] -= self.velocity[1] * self.kinetic_friction * self.app.deltatime
+
+        #if (np.abs(self.velocity) < self.static_friction).all():
+        #    self.velocity = np.zeros(2)
+        #else:
+        #    self.velocity -= self.velocity * self.kinetic_friction * self.app.deltatime

@@ -3,7 +3,6 @@ import pygame
 import numpy as np
 
 from scripts.entities.entity import Entity, DamageSource
-from scripts.entities.enemy import Enemy
 from scripts.utils import *
 
 class Player(Entity):
@@ -13,6 +12,7 @@ class Player(Entity):
         self.sprite = load_img("player/player.png")
 
         self.speed = 100.
+        self.acceleration = 1000.
 
         self.resources = {"money" : 0}
         self.modes = ["Fighting","Building"]
@@ -36,6 +36,7 @@ class Player(Entity):
                     if event.button == 1:
                         hits = raycast(Ray(self.pos, self.pos + self.forward * self.attack_distance), self.app.enemies)
                         for hit in hits:
+                            from scripts.entities.enemy import Enemy
                             if isinstance(hit.entity, Enemy):
                                 hit.entity.damage(self.attack_damage, DamageSource(self.pos))
                 elif self.mode == "Building":
@@ -54,13 +55,15 @@ class Player(Entity):
             float(self.app.keys_pressed[pygame.K_s] | self.app.keys_pressed[pygame.K_DOWN]) -
                 float(self.app.keys_pressed[pygame.K_w] | self.app.keys_pressed[pygame.K_UP]),
         ]))
-        self.velocity = input_vec * self.speed
+        if np.linalg.norm(self.velocity) < self.speed:
+            self.velocity += self.acceleration * input_vec * self.app.deltatime
 
         self.forward = normalize(self.app.mouse.pos - self.pos)
 
         super().update()
 
-    def render(self, offset=np.array([0, 0])):
+    def render(self, offset=[0, 0]):
+        offset = np.array(offset)
         sprite = super().render(offset)
         sprite = pygame.transform.scale(sprite, self.size)
         self.app.display.blit(sprite, self.pos - self.size * 0.5 - offset)
