@@ -1,73 +1,60 @@
 import pygame
-
 import math
-
-from scripts.components.health import Health
+import numpy as np
+from scripts.rigidbody import Rigidbody
 from scripts.utils import *
+from scripts.components.hitflash import HitFlash
 
-class Entity():
-    def __init__(self,app,pos,size,health):
-        self.app = app
+class DamageSource:
+    def __init__(self, point):
+        self.point = point
 
-        self.pos = list(pos)
-        self.display_pos = self.pos
-        self.size = size
+class Entity(Rigidbody):
+    def __init__(self,
+        app,
+        health = 3,
+        attack_distance = 30.,
+        attack_damage = 1,
+        forward = [0., -1.],
+        recoil_speed = 200.,
+        sprite = None,
+        **kwargs,
+    ):
+        super().__init__(app, **kwargs)
 
-        self.rect = pygame.Rect(self.pos[0],self.size[1],self.size[0],self.size[1])
+        self.health = health
+        self.hit_flash = HitFlash()
 
-        self.lerp_time = 0
+        self.attack_distance = attack_distance
+        self.attack_damage = attack_damage
+        self.forward = np.array(forward)
 
-        self.health = Health(self.app,health)
+        self.recoil_speed = recoil_speed
 
-        self.collidables = []
-
-        self.velocity = [0,0]
-        self.movement = [False,False,False,False]
-
-    def move(self):
-        frame_movement = [self.velocity[0] + (self.movement[1] - self.movement[0]),self.velocity[1] + (self.movement[3] - self.movement[2])]
-
-        self.pos[0] += frame_movement[0]
-        self.rect.update(self.pos[0],self.pos[1],self.size[0],self.size[1])
-        collision = self.rect.collidelist(self.collidables)
-
-        
-        if collision != -1:
-            if frame_movement[0] > 0:
-                self.rect.right = self.collidables[collision].left
-            if frame_movement[0] < 0:
-                self.rect.left = self.collidables[collision].right
-            self.pos[0] = self.rect.x
-
-        self.pos[1] += frame_movement[1]
-        self.rect.update(self.pos[0],self.pos[1],self.size[0],self.size[1])
-        collision = self.rect.collidelist(self.collidables)
-
-        if collision != -1:
-            if frame_movement[1] > 0:
-                self.rect.bottom = self.collidables[collision].top
-            if frame_movement[1] < 0:
-                self.rect.top = self.collidables[collision].bottom
-            self.pos[1] = self.rect.y
-
-
-    def get_collisions(self):
-        closest_tiles = []
-
-        for tile in self.app.tile_system.tiles:
-            tile_dist = math.sqrt((self.pos[0]-tile["pos"][0])**2 + (self.pos[1]-tile["pos"][1])**2)
-            if tile_dist < 96:
-                closest_tiles.append(tile)
-
-
-        closest_rects = [tile["rect"] for tile in closest_tiles]
-
-        return closest_rects
+        self.sprite = pygame.Surface(self.size) if sprite is None else sprite
 
     def update(self):
-        self.collidables = self.get_collisions()
+        self.hit_flash.update(self.app.deltatime)
+        super().update()
 
-        self.move()
+    def damage(self, damage: int, source: DamageSource):
+        self.health -= damage
+        self.velocity = normalize(self.pos - source.point) * self.recoil_speed
+        self.hit_flash.begin()
+        # TODO do something when health is 0
+        # this will need to be handled differently by the player and the enemies
+        #if self.health == 0:
+        #    del self
 
-    def render(self,offset=(0,0)):
-        self.app.display.blit(pygame.transform.scale(load_img("player/player.png"),self.size),(self.pos[0]-offset[0],self.pos[1]-offset[1]))
+    def render(self,offset=[0, 0]) -> pygame.Surface:
+        offset = np.array(offset)
+        # FOR DEBUGGING RAYCASTING
+        hits = raycast(Ray(self.pos, self.pos + self.forward * self.attack_distance), self.app.enemies + [self.app.player])
+        color = (0, 255, 0) if len(hits) > 0 else (128, 128, 128)
+        pygame.draw.line(self.app.display, color, self.pos - offset, self.pos + self.forward * self.attack_distance - offset)
+        for hit in hits:
+            pygame.draw.circle(self.app.display, (0, 255, 0), hit.point - offset, 3)
+
+        sprite = self.sprite.copy()
+        sprite.fill(self.hit_flash.color_to_add, special_flags=pygame.BLEND_RGBA_ADD)
+        return sprite
