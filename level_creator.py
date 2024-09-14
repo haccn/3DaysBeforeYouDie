@@ -4,10 +4,10 @@ import sys
 
 from scripts.mouse import Mouse
 from scripts.const import *
-from level_creator_scripts.tile_system import tile_System
+from level_creator_scripts.tile_system import tile_system
 
 class main():
-    
+
     def __init__(self):
         self.display = pygame.Surface(DISPLAY_SIZE)
         self.screen = pygame.display.set_mode(WIN_SIZE)
@@ -28,11 +28,11 @@ class main():
 
         # tile system
 
-        self.tile_system = tile_System(self)
+        self.tile_system = tile_system(self)
 
         self.all_events = self.events()
 
-        
+
 
     def events(self):
         events = pygame.event.get()
@@ -59,7 +59,7 @@ class main():
 
             if self.mouse.click():
                 self.tile_system.add_tile(self.mouse.pos,self.tile_system.tile_types[self.tile_system.tile_type])
-            
+
             if self.mouse.right_click():
                 self.tile_system.remove_tile(self.mouse.pos)
 
@@ -67,7 +67,7 @@ class main():
             self.delta = self.clock.get_fps() / 1000
 
             #render
-            
+
             self.render()
 
 
@@ -76,9 +76,9 @@ class main():
 
         #self.mouse.render()
 
-        
+
         self.tile_system.render()
-        
+
         self.tile_system.tile_preview(self.mouse.pos)
 
         self.screen.blit(pygame.transform.scale(self.display,WIN_SIZE),(0,0))
