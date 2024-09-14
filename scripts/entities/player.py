@@ -35,7 +35,7 @@ class Player(Entity):
             if self.mode == "Building":
                 if self.app.mouse.click():
                     print("Yes")
-                    self.app.building_system.place_building()
+                    self.app.building_system.place()
 
                 #print(self.mode)
                     
