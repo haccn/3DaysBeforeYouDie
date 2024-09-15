@@ -6,9 +6,10 @@ class Rigidbody:
         app,
         pos = [0., 0.],
         size = [10., 10.],
+        acceleration = [0., 0.],
         velocity = [0., 0.],
         static_friction = 0.5,
-        kinetic_friction = 3.,
+        kinetic_friction = 4.,
      ):
         self.app = app
 
@@ -16,6 +17,7 @@ class Rigidbody:
         self.size = np.array(size)
         self.rect = pygame.Rect(pos, size)
 
+        self.acceleration = np.array(acceleration)
         self.velocity = np.array(velocity)
         self.static_friction = static_friction
         self.kinetic_friction = kinetic_friction
@@ -40,6 +42,8 @@ class Rigidbody:
 
         # update position and handle collisions
 
+        self.velocity += self.acceleration * self.app.deltatime
+
         prevx = self.pos[0]
         self.pos[0] += self.velocity[0] * self.app.deltatime
         collision = pygame.Rect(self.pos, self.size).collidelist(collidables)
@@ -56,8 +60,6 @@ class Rigidbody:
         self.rect.size = self.size
 
         # apply friction
-
-        print(self, " ", self.velocity)
 
         if abs(self.velocity[0]) < self.static_friction:
             self.velocity[0] = 0

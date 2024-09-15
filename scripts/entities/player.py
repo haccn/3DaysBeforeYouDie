@@ -7,12 +7,12 @@ from scripts.utils import *
 
 class Player(Entity):
     def __init__(self,*args,**kwargs):
-        super().__init__(*args,health=5,size=np.array([9, 16]),**kwargs)
+        super().__init__(*args,health=5,size=np.array([9, 16]),kinetic_friction=5.,**kwargs)
 
         self.sprite = load_img("player/player.png")
 
-        self.speed = 100.
-        self.acceleration = 1000.
+        self.speed = 70.
+        self.acceleration_speed = 1000.
 
         self.resources = {"money" : 0}
         self.modes = ["Fighting","Building"]
@@ -34,11 +34,11 @@ class Player(Entity):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.mode == "Fighting":
                     if event.button == 1:
-                        hits = raycast(Ray(self.pos, self.pos + self.forward * self.attack_distance), self.app.enemies)
-                        for hit in hits:
+                        hit_entities = [hit.entity for hit in raycast(Ray(self.pos, self.pos + self.forward * self.attack_distance), self.app.enemies)]
+                        for entity in list(set(hit_entities)):
                             from scripts.entities.enemy import Enemy
-                            if isinstance(hit.entity, Enemy):
-                                hit.entity.damage(self.attack_damage, DamageSource(self.pos))
+                            if isinstance(entity, Enemy):
+                                entity.damage(self.attack_damage, DamageSource(self.pos))
                 elif self.mode == "Building":
                     self.app.building_system.place()
                 if self.app.mouse.right_click():
@@ -46,6 +46,11 @@ class Player(Entity):
 
                 #print(self.mode)
 
+    def damage(self, damage, source: DamageSource):
+        super().damage(damage, source)
+        if self.health <= 0:
+            del self.app.player
+            del_from_list(self.app.entities, self)
 
     def update(self):
         self.input()
@@ -57,7 +62,9 @@ class Player(Entity):
                 float(self.app.keys_pressed[pygame.K_w] | self.app.keys_pressed[pygame.K_UP]),
         ]))
         if np.linalg.norm(self.velocity) < self.speed:
-            self.velocity += self.acceleration * input_vec * self.app.deltatime
+            self.acceleration = input_vec * self.acceleration_speed
+        else:
+            self.acceleration = np.zeros(2)
 
         self.forward = normalize(self.app.mouse.pos - self.pos)
 

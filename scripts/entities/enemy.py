@@ -4,10 +4,12 @@ import pygame
 import numpy as np
 
 class Enemy(Entity):
-    def __init__(self, *args, health=3, **kwargs):
+    def __init__(self, *args, pos=[100., 100.], health=3, **kwargs):
         super().__init__(*args, health=health, **kwargs)
-        self.pos = np.array([100., 100.])
-        self.speed = 2
+        self.pos = np.array(pos)
+
+        self.speed = 30
+        self.acceleration_speed = 700
 
         self.attack_distance = 12
 
@@ -18,26 +20,31 @@ class Enemy(Entity):
         self.sprite.fill((255, 0, 0))
 
     def update(self):
-        #dir_to_player = utils.normalize(self.app.player.pos - self.pos)
-        #self.velocity = dir_to_player * self.speed
+        dir_to_king = utils.normalize(self.app.king.pos - self.pos)
+        if np.linalg.norm(self.velocity) < self.speed:
+            self.acceleration = dir_to_king * self.acceleration_speed
+        else:
+            self.acceleration = np.zeros(2)
 
         self.forward = utils.normalize(self.app.player.pos - self.pos)
 
         if self.attack_cooldown_timer <= 0:
-            hits = utils.raycast(utils.Ray(self.pos, self.pos + self.forward * self.attack_distance), [self.app.player])
-            for hit in hits:
-                from scripts.entities.player import Player
-                if isinstance(hit.entity, Player):
-                    hit.entity.damage(self.attack_damage, DamageSource(self.pos))
-                    self.attack_cooldown_timer = self.attack_cooldown
+            hit_entities = [hit.entity for hit in utils.raycast(utils.Ray(self.pos, self.pos + self.forward * self.attack_distance), [self.app.player])]
+            for entity in list(set(hit_entities)):
+                entity.damage(self.attack_damage, DamageSource(self.pos))
+                self.attack_cooldown_timer = self.attack_cooldown
         else:
             self.attack_cooldown_timer -= self.app.deltatime
 
-        print("enemy: ", self, " ", self.velocity)
         super().update()
 
     def damage(self, damage, source: DamageSource):
+        print("damaged: ", damage, "hp: ",self.health)
         super().damage(damage, source)
+        print("hp: ",self.health)
+        if self.health <= 0:
+            utils.del_from_list(self.app.enemies, self)
+            utils.del_from_list(self.app.entities, self)
 
     def render(self, offset = [0, 0]):
         offset = np.array(offset)

@@ -15,6 +15,7 @@ from scripts.mouse import Mouse
 from level_creator_scripts.tile_system import tile_system
 from scripts.entities.player import Player
 from scripts.entities.enemy import Enemy
+from scripts.entities.king import King
 from scripts.time_cycle import time_cycle
 from scripts.building_system import Building_System
 
@@ -60,13 +61,13 @@ class game():
 
         self.tile_system.loadsave("tileset_0")
 
-        #player
+        #entities
 
         self.player = Player(app=self)
-
-        # enemies
-
+        self.king = King(self)
+        #self.enemies = [Enemy(self), Enemy(self, pos=[50., 50.]), Enemy(self, pos=[70., 70.])]
         self.enemies = [Enemy(self)]
+        self.entities = [self.player, self.king] + self.enemies
 
         #self.time_cycle = time_cycle(self)
 
@@ -93,10 +94,8 @@ class game():
 
             self.render()
 
-            self.player.update()
-
-            for enemy in self.enemies:
-                enemy.update()
+            for entity in self.entities:
+                entity.update()
 
             self.mouse.update()
 
@@ -117,10 +116,8 @@ class game():
 
         #self.mouse.render()
 
-        self.player.render(self.offset)
-
-        for enemy in self.enemies:
-            enemy.render(self.offset)
+        for entity in self.entities:
+            entity.render(self.offset)
 
         self.tile_system.render(self.offset)
 
