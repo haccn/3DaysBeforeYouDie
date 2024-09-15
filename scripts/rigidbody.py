@@ -27,9 +27,9 @@ class Rigidbody:
         collidable_max_distance = 40.
 
         # filter out distant tiles
-        for tile in self.app.tile_system.tiles:
-            if np.linalg.norm(tile["rect"].center - self.pos) < collidable_max_distance:
-                collidables.append(tile["rect"])
+        for collidable in self.app.collidables:
+            if np.linalg.norm(collidable.center - self.pos) < collidable_max_distance:
+                collidables.append(collidable)
 
         for enemy in self.app.enemies:
             if np.linalg.norm(enemy.pos - self.pos) < collidable_max_distance and enemy != self:
@@ -40,24 +40,31 @@ class Rigidbody:
 
         # update position and handle collisions
 
-        prevx = self.pos[0]
         self.pos[0] += self.velocity[0] * self.app.deltatime
         collision = pygame.Rect(self.pos, self.size).collidelist(collidables)
         if collision != -1:
-            self.pos[0] = prevx
+            if self.velocity[0] > 0:
+                self.rect.right = collidables[collision].left
+            if self.velocity[0] < 0:
+                self.rect.left = collidables[collision].right
+            self.pos[0] = self.rect.x
 
-        prevy = self.pos[1]
         self.pos[1] += self.velocity[1] * self.app.deltatime
         collision = pygame.Rect(self.pos, self.size).collidelist(collidables)
         if collision != -1:
-            self.pos[1] = prevy
+            if self.velocity[1] > 0:
+                self.rect.bottom = collidables[collision].top
+                self.velocity[1] = 0
+            if self.velocity[1] < 0:
+                self.rect.top = collidables[collision].bottom
+            self.pos[1] = self.rect.y
 
-        self.rect.center = self.pos
+        self.rect.update(self.pos,self.size)
         self.rect.size = self.size
 
         # apply friction
 
-        print(self, " ", self.velocity)
+        #print(self, " ", self.velocity)
 
         if abs(self.velocity[0]) < self.static_friction:
             self.velocity[0] = 0

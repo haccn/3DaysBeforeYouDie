@@ -33,7 +33,7 @@ class Enemy(Entity):
         else:
             self.attack_cooldown_timer -= self.app.deltatime
 
-        print("enemy: ", self, " ", self.velocity)
+        #print("enemy: ", self, " ", self.velocity)
         super().update()
 
     def damage(self, damage, source: DamageSource):

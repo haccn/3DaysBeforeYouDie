@@ -41,7 +41,6 @@ class Player(Entity):
                                 hit.entity.damage(self.attack_damage, DamageSource(self.pos))
                 elif self.mode == "Building":
                     self.app.building_system.place()
-                if self.app.mouse.right_click():
                     self.app.building_system.delete_building()
 
                 #print(self.mode)
@@ -67,6 +66,10 @@ class Player(Entity):
         offset = np.array(offset)
         sprite = super().render(offset)
         sprite = pygame.transform.scale(sprite, self.size)
-        self.app.display.blit(sprite, self.pos - self.size * 0.5 - offset)
+        self.app.display.blit(sprite, self.pos - offset)
         if self.mode == "Building":
             self.app.building_system.preview()
+        rect = self.rect
+        rect.x = self.pos[0] - offset[0]
+        rect.y = self.pos[1] - offset[1]
+        #pygame.draw.rect(self.app.display,(0,0,0),rect)

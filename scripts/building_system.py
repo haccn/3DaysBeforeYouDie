@@ -99,9 +99,10 @@ class Building_System():
                 return
 
         if placement["b_type"] == "wall":
-            self.place_wall(list(self.building_types.keys())[self.placement],(16,16),placement["health"])
+            placed_wall = self.place_wall(list(self.building_types.keys())[self.placement],(16,16),placement["health"])
             for wall in self.buildings:
                 self.update_wall(wall)
+            self.app.collidables.append(placed_wall["rect"])
 
         if placement["b_type"] == "tower":
             self.place_building("tower",list(self.building_types.keys())[self.placement],5)
@@ -115,10 +116,13 @@ class Building_System():
 
 
     def update(self):
-        self.place_pos = list(pygame.Vector2(self.app.mouse.pos[0]-self.app.player.pos[0]+1,self.app.mouse.pos[1]-self.app.player.pos[1]+1).normalize())
+        normalized_mouse = pygame.Vector2(self.app.mouse.pos).normalize()
 
-        self.place_pos[0] = round(self.place_pos[0]) * TILE_SIZE[0] + (int(self.app.player.rect.centerx / TILE_SIZE[0]) * TILE_SIZE[0])
-        self.place_pos[1] = round(self.place_pos[1]) * TILE_SIZE[1] + (int(self.app.player.rect.centery / TILE_SIZE[1]) * TILE_SIZE[1])
+
+        self.place_pos[0] = round(normalized_mouse[0]) * TILE_SIZE[0] + int(self.app.player.pos[0] / 16) * 16
+        self.place_pos[1] = round(normalized_mouse[1]) * TILE_SIZE[1] + int(self.app.player.pos[1] / 16) * 16
+
+        print(self.place_pos)
 
     def select(self):
         for event in self.app.all_events:
@@ -137,5 +141,5 @@ class Building_System():
         for building in self.buildings:
             self.app.display.blit(building["img"],(building["pos"][0]-offset[0],building["pos"][1]-offset[1]))
 
-    def preview(self):
-        pygame.draw.rect(self.app.display,(0,255,0,125),pygame.Rect((self.place_pos[0]-self.app.offset[0],self.place_pos[1]-self.app.offset[1]),(16,16)))
+    def preview(self,offset=[0,0]):
+        pygame.draw.rect(self.app.display,(0,255,0,125),pygame.Rect((self.place_pos[0]-offset[0],self.place_pos[1]-offset[1]),(16,16)))

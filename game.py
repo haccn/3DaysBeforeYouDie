@@ -68,11 +68,14 @@ class game():
 
         self.enemies = [Enemy(self)]
 
-        #self.time_cycle = time_cycle(self)
+        #self.time_cycle = time_cycle(self)s
 
         self.building_system = Building_System(self)
 
+        self.collidables = []
 
+        for tile in self.tile_system.tiles:
+            self.collidables.append(tile["rect"])
 
 
     def events(self):
@@ -102,7 +105,7 @@ class game():
 
             self.building_system.update()
 
-            self.deltatime = self.clock.tick() / 1000.
+            self.deltatime = self.clock.tick(60) / 1000.
             self.time_elapsed += self.deltatime
 
 
@@ -139,7 +142,6 @@ class game():
 
         self.screen.blit(pygame.transform.scale(self.display,self.screen.get_size()),(0,0))
 
-        #self.time_cycle.render()
 
         pygame.display.flip()
 

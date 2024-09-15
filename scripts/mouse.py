@@ -12,8 +12,8 @@ class Mouse():
     def update(self):
         self.pos = list(pygame.mouse.get_pos())
 
-        self.pos[0] = self.pos[0] * (self.app.display.get_size()[0] / self.app.screen_size[0]) + self.app.offset[0]
-        self.pos[1] = self.pos[1] * (self.app.display.get_size()[1] / self.app.screen_size[1]) + self.app.offset[1]
+        self.pos[0] = self.pos[0] * (self.app.display.get_size()[0] / self.app.screen_size[0])
+        self.pos[1] = self.pos[1] * (self.app.display.get_size()[1] / self.app.screen_size[1])
 
         self.mouse_rect.update(self.pos[0],self.pos[1],self.size[0],self.size[1])
 
